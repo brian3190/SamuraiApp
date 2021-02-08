@@ -1,8 +1,8 @@
-﻿using SamuraiApp.Domain;
-using System;
+﻿using Microsoft.EntityFrameworkCore;
+using SamuraiApp.Domain;
+using SamuraiApp.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SamuraiApp.Data
@@ -11,7 +11,7 @@ namespace SamuraiApp.Data
     {
         private SamuraiContext _context;
 
-        public BusinessDataLogic(SamuraiContext context)
+        public BusinessDataLogic (SamuraiContext context)
         {
             _context = context;
         }
@@ -27,8 +27,23 @@ namespace SamuraiApp.Data
             {
                 _context.Samurais.Add(new Samurai { Name = name });
             }
-            var dbResult = _context.SaveChanges(); //returns number of rows affected
-            return dbResult;    //in case for validation
+            var dbResult = _context.SaveChanges();
+            return dbResult;     //number of rows affected
+        }
+
+        public int InsertNewSamurai(Samurai samurai)
+        {
+            _context.Samurais.Add(samurai);
+            var dbResult = _context.SaveChanges();
+            return dbResult;
+        }
+
+        public Samurai GetSamuraiWithQuotes(int samuraiId)
+        {
+            var samuraiWithQuotes = _context.Samurais.Where(s => s.Id == samuraiId)
+                                                     .Include(s => s.Quotes)
+                                                     .FirstOrDefault();
+            return samuraiWithQuotes;
         }
     }
 }
